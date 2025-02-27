@@ -1,9 +1,9 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once 'vendor/autoload.php';
 
-use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use App\RabbitMQHelper;
 
 // Connect to RabbitMQ
 $rabbitMQ = new RabbitMQHelper;
@@ -12,7 +12,7 @@ $channel = $rabbitMQ->getChannel();
 $channel->exchange_declare('direct_logs', 'direct', false, false, false);
 
 $severity = $argv[1] ?? 'info';
-$data = implode(' ', array_slide($argv, 2));
+$data = implode(' ', array_slice($argv, 2));
 $msg = new AMQPMessage($data);
 
 $channel->basic_publish($msg, 'direct_logs', $severity);
